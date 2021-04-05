@@ -44,12 +44,41 @@
 
 
 def findU(a):
-    for i in range(len(a)):
-        if a[i][i] is 0:
+    matL = unitMatrics(makeMatrics(len(a), len(a[0])))
+    for row in range(len(a)):
+        j = row + 1
+        if a[row][row] is not 0:
             while j < len(a):
-                if a[i][j] is not 0:
+                if a[j][row] is not 0:
+                    b = elementalMatrics(a, j, row)
+                    a = multMatrics(b, a)
+                    b[j][row] *= -1
+                    matL = multMatrics(b, matL)
+                j += 1
+        else:
+            while j < len(a):
+                if a[j][row] is not 0:
+                    a = swapRow(a, row, j)
+                    break
+                j += 1
+        # what to do if all under pivot are zero
+    # return a, matL
+    print(a)
+    print(matL)
 
 
+def elementalMatrics(a, i, j):
+    c = makeMatrics(len(a), len(a[0]))
+    for x in range(len(a)):
+        c[x][x] = 1  # make c a unit matrix
+    c[i][j] = -1 * (a[i][j] / a[j][j])
+    return c
+
+
+def unitMatrics(c):
+    for x in range(len(c)):
+        c[x][x] = 1  # make c a unit matrix
+    return c
 
 
 def multMatrics(a, b):
@@ -58,6 +87,7 @@ def multMatrics(a, b):
         for col in range(len(b[0])):
             for x in range(len(a)):
                 c[row][col] += (a[row][x] * b[x][col])
+    return c
 
 
 def makeMatrics(row, col):
@@ -84,11 +114,13 @@ def swapRow(a, r1, r2):
         a[r2] = temp
     return a
 
+
 def solveLU(invU, invL, b):
-    return multMatrics(multMatrics(invU,invL),b)
+    return multMatrics(multMatrics(invU, invL), b)
 
 
 def drive():
+    findU([[1, 2, 1], [2, 6, 1], [1, 1, 4]])
     # print(minor([[1, 2, 3], [4, 5, 6], [7, 8, 9]], 2, 2))
     c = setMatrics()
     print(c)
