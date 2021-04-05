@@ -45,4 +45,15 @@ def makeMatrics(row, col):
     return c
 
 
+def setMatrics():
+    row = int(input('Enter rows >>> '))
+    col = int(input('Enter columns >>> '))
+    c = makeMatrics(row, col)
+    for i in range(row):
+        for j in range(col):
+            c[i][j] = int(input('Enter number: '))
+    return c
+
+
 test()
+print(setMatrics())
