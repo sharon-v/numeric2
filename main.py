@@ -84,6 +84,9 @@ def swapRow(a, r1, r2):
         a[r2] = temp
     return a
 
+def solveLU(invU, invL, b):
+    return multMatrics(multMatrics(invU,invL),b)
+
 
 def drive():
     # print(minor([[1, 2, 3], [4, 5, 6], [7, 8, 9]], 2, 2))
