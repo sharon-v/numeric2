@@ -28,16 +28,21 @@ def det(A):
 #
 
 def test():
-    a = [[1, 2], [3, 4]]    # try different sizes!!
-    b = [[2, 2], [2, 2]]
-    size = len(a)
-    # make new matrics c
-    c = [[0, 0], [0, 0]]
-    for row in range(size):
-        for col in range(size):
-            for x in range(size):
+    a = [[3, 2], [8, 6]]    # try different sizes!!
+    b = [[3, 4], [2, 9]]
+    c = makeMatrics(len(a), len(b[0]))
+    for row in range(len(a)):
+        for col in range(len(b[0])):
+            for x in range(len(a)):
                 c[row][col] += (a[row][x] * b[x][col])
     print(c)
+
+
+def makeMatrics(row, col):
+    c = []
+    for i in range(row):
+        c += [[0] * col]
+    return c
 
 
 test()
