@@ -55,5 +55,15 @@ def setMatrics():
     return c
 
 
+def swapRow(a, r1, r2):
+    if r2 < len(a) and r1 < len(a):
+        temp = a[r1]
+        a[r1] = a[r2]
+        a[r2] = temp
+    return a
+
+
 test()
-print(setMatrics())
+c = setMatrics()
+print(c)
+print(swapRow(c, 1, 0))
