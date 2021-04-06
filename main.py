@@ -63,8 +63,9 @@ def findU(a):
                 j += 1
         # what to do if all under pivot are zero
     # return a, matL
-    print(a)
-    print(matL)
+    printMat(a)
+    print("--------------")
+    printMat(matL)
 
 
 def elementalMatrics(a, i, j):
@@ -81,16 +82,29 @@ def unitMatrics(c):
     return c
 
 
-def multMatrics(a, b):
-    c = makeMatrics(len(a), len(b[0]))
-    for row in range(len(a)):
-        for col in range(len(b[0])):
-            for x in range(len(a)):
-                c[row][col] += (a[row][x] * b[x][col])
+# def multMatrics(a, b):
+#     c = makeMatrics(len(a), len(b[0]))
+#     for row in range(len(a)):
+#         for col in range(len(b[0])):
+#             for x in range(len(a)):
+#                 c[row][col] += (a[row][x] * b[x][col])
+#     return c
+
+def multMatrics(b, a):
+    c = makeMatrics(len(b), len(a[0]))
+    for row in range(len(b)):
+        for col in range(len(a[0])):
+            for x in range(len(b)):
+                c[row][col] += (b[row][x] * a[x][col])
     return c
 
 
 def makeMatrics(row, col):
+    """
+    :param row: amount of rows
+    :param col: amount of columns
+    :return: zero matrix at the arguments size
+    """
     c = []
     for i in range(row):
         c += [[0] * col]
@@ -98,6 +112,9 @@ def makeMatrics(row, col):
 
 
 def setMatrics():
+    """
+    :return: input matrix from user
+    """
     row = int(input('Enter rows >>> '))
     col = int(input('Enter columns >>> '))
     c = makeMatrics(row, col)
@@ -108,6 +125,12 @@ def setMatrics():
 
 
 def swapRow(a, r1, r2):
+    """
+    :param a: original matrix
+    :param r1: first row to swap
+    :param r2: the row to swap with
+    :return: the original matrix with the rows swapped
+    """
     if r2 < len(a) and r1 < len(a):
         temp = a[r1]
         a[r1] = a[r2]
@@ -116,7 +139,26 @@ def swapRow(a, r1, r2):
 
 
 def solveLU(invU, invL, b):
-    return multMatrics(multMatrics(invU, invL), b)
+    """
+    :param invU: inverse U matrix
+    :param invL: inverse L matrix
+    :param b: solution vector b
+    :return: multiplication of the three
+    """
+    return multMatrics(invU, multMatrics(invL, b))
+
+
+def printMat(a):
+    """
+    :param a: a matrix to print
+    :return: prints in matrix format
+    """
+    for i in range(len(a)):
+        j = 0
+        while j < len(a[0]):
+            print(a[i][j], end=" ")
+            j += 1
+        print("")
 
 
 def drive():
