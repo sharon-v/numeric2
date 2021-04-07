@@ -53,7 +53,7 @@ def findU(a):
                     b = elementalMatrics(a, j, row)
                     a = multMatrics(b, a)
                     b[j][row] *= -1
-                    matL = multMatrics(b, matL)
+                    matL = multMatrics(matL, b)
                 j += 1
         else:
             while j < len(a):
