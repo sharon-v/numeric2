@@ -16,35 +16,40 @@
 # ############# det ##############
 
 
-# def det(a):
-#     if len(a) and len(a[0]) is 2:
-#         return a[0][0] * a[1][1] - a[0][1] * a[1][0]
-#     i = 0
-#     x = 1
-#     for j in range(len(a[0])):
-#         return a[i][j]
+def det(a):
+    if len(a) and len(a[0]) is 2:
+        return a[0][0] * a[1][1] - a[0][1] * a[1][0]
+    sum1 = 0
+    for j in range(len(a[0])):
+        if j % 2 == 0:
+            sign = 1
+        else:
+            sign = -1
+        sum1 += sign*a[0][j]*det(minor(a, 0, j))
+    return sum1
 
 
-# def minor(b, row, col):
-#     if row >= len(b) and col >= len(b):
-#         return b
-#     c = makeMatrics(len(b) - 1, len(b) - 1)
-#     x = 0
-#     y = 0
-#     for i in range(len(b)):
-#         for j in range(len(b[0])):
-#             if i is not row and j is not col:
-#                 c[x][y] = b[i][j]
-#                 if y is len(c[0]) - 1:
-#                     x += 1
-#                     y = 0
-#                 else:
-#                     y += 1
-#     return c
+def minor(b, row, col):
+    if row >= len(b) and col >= len(b):
+        return b
+    c = makeMatrics(len(b) - 1, len(b) - 1)
+    x = 0
+    y = 0
+    for i in range(len(b)):
+        for j in range(len(b[0])):
+            if i is not row and j is not col:
+                c[x][y] = b[i][j]
+                if y is len(c[0]) - 1:
+                    x += 1
+                    y = 0
+                else:
+                    y += 1
+    return c
 
 
 def findU(a):
     matL = unitMatrics(makeMatrics(len(a), len(a[0])))
+    a, matL = dispatchU(a, 2)
     for row in range(len(a)):
         j = row + 1
         if a[row][row] is not 0:
@@ -52,8 +57,7 @@ def findU(a):
                 if a[j][row] is not 0:
                     b = elementalMatrics(a, j, row)
                     a = multMatrics(b, a)
-                    b[j][row] *= -1
-                    matL = multMatrics(matL, b)
+                    matL = multMatrics(b, matL)
                 j += 1
         else:
             while j < len(a):
@@ -61,11 +65,90 @@ def findU(a):
                     a = swapRow(a, row, j)
                     break
                 j += 1
-        # what to do if all under pivot are zero
-    # return a, matL
-    printMat(a)
-    print("--------------")
-    printMat(matL)
+    return a, matL
+
+
+def dispatchU(a, index=0):
+    U, invL = findU(a)
+    if index is 0:
+        return U
+    if index is 1:
+        return invL
+    return U, invL
+
+
+
+# def findLU(a):
+#     matL = unitMatrics(makeMatrics(len(a), len(a[0])))
+#     for row in range(len(a)):
+#         j = row + 1
+#         if a[row][row] is not 0:
+#             while j < len(a):
+#                 if a[j][row] is not 0:
+#                     b = elementalMatrics(a, j, row)
+#                     a = multMatrics(b, a)
+#                     b[j][row] *= -1
+#                     matL = multMatrics(b, matL)
+#                 j += 1
+#         else:
+#             while j < len(a):
+#                 if a[j][row] is not 0:
+#                     a = swapRow(a, row, j)
+#                     break
+#                 j += 1
+#         # what to do if all under pivot are zero
+#     return a, matL
+#
+#
+# def dispatchLU(a, index=2):
+#     U,L=findLU(a)
+#     if index is 0:
+#         return U
+#     if index is 1:
+#         return L
+#     else:
+#         print(U)
+#         print(L)
+
+
+
+def findL(a):
+    return inverse(findU(a, 1))
+
+
+def inverse(a):
+    if det(a) == 0:
+        return
+    matInverse = dispatchU(a, 1)
+    size = len(a[0])-1
+    while size > 0:
+        for i in range(size-1):
+            b = elementalMatrics(a, i, size)
+            a = multMatrics(b, a)
+            matInverse = multMatrics(b, matInverse)
+        size -= 1
+    print(matInverse)
+    return oneOnDiagonal(a, matInverse)
+
+
+def oneOnDiagonal(a, matInverse):
+    b = makeMatrics(len(a), len(a[0]))
+    for x in range(len(a[0])):
+        b[x][x] = 1  # make b a unit matrix
+    for i in range(len(a[0])):
+        b[i][i] = 1 / a[i][i]
+        matInverse = multMatrics(b, matInverse)
+    return b
+
+
+def norma(a):
+    sum1 = 0
+    norm = 0
+    for i in range(len(a[0])):
+        for j in range(len(a)):
+            sum += abs(a[i][j])
+        norm = max(norm, sum1)
+    return norm
 
 
 def elementalMatrics(a, i, j):
@@ -82,29 +165,16 @@ def unitMatrics(c):
     return c
 
 
-# def multMatrics(a, b):
-#     c = makeMatrics(len(a), len(b[0]))
-#     for row in range(len(a)):
-#         for col in range(len(b[0])):
-#             for x in range(len(a)):
-#                 c[row][col] += (a[row][x] * b[x][col])
-#     return c
-
-def multMatrics(b, a):
-    c = makeMatrics(len(b), len(a[0]))
-    for row in range(len(b)):
-        for col in range(len(a[0])):
-            for x in range(len(b)):
-                c[row][col] += (b[row][x] * a[x][col])
+def multMatrics(a, b):
+    c = makeMatrics(len(a), len(b[0]))
+    for row in range(len(a)):
+        for col in range(len(b[0])):
+            for x in range(len(a)):
+                c[row][col] += (a[row][x] * b[x][col])
     return c
 
 
 def makeMatrics(row, col):
-    """
-    :param row: amount of rows
-    :param col: amount of columns
-    :return: zero matrix at the arguments size
-    """
     c = []
     for i in range(row):
         c += [[0] * col]
@@ -112,9 +182,6 @@ def makeMatrics(row, col):
 
 
 def setMatrics():
-    """
-    :return: input matrix from user
-    """
     row = int(input('Enter rows >>> '))
     col = int(input('Enter columns >>> '))
     c = makeMatrics(row, col)
@@ -125,12 +192,6 @@ def setMatrics():
 
 
 def swapRow(a, r1, r2):
-    """
-    :param a: original matrix
-    :param r1: first row to swap
-    :param r2: the row to swap with
-    :return: the original matrix with the rows swapped
-    """
     if r2 < len(a) and r1 < len(a):
         temp = a[r1]
         a[r1] = a[r2]
@@ -139,34 +200,26 @@ def swapRow(a, r1, r2):
 
 
 def solveLU(invU, invL, b):
-    """
-    :param invU: inverse U matrix
-    :param invL: inverse L matrix
-    :param b: solution vector b
-    :return: multiplication of the three
-    """
-    return multMatrics(invU, multMatrics(invL, b))
-
-
-def printMat(a):
-    """
-    :param a: a matrix to print
-    :return: prints in matrix format
-    """
-    for i in range(len(a)):
-        j = 0
-        while j < len(a[0]):
-            print(a[i][j], end=" ")
-            j += 1
-        print("")
+    return multMatrics(multMatrics(invU, invL), b)
 
 
 def drive():
-    findU([[1, 2, 1], [2, 6, 1], [1, 1, 4]])
-    # print(minor([[1, 2, 3], [4, 5, 6], [7, 8, 9]], 2, 2))
-    c = setMatrics()
-    print(c)
-    print(swapRow(c, 1, 0))
+    a = [[1, 2, 1], [2, 6, 1], [1, 1, 4]]
+    b = [7, 8, 9]
+    if len(a) < 4:
+        x = multMatrics(inverse(a), b)
+        print("norma: " + norma(x))
+    else:
+        dispatchU(a)
+    # findU([[1, 2, 1], [2, 6, 1], [1, 1, 4]])
+    # # print(minor([[1, 2, 3], [4, 5, 6], [7, 8, 9]], 2, 2))
+    # c = setMatrics()
+    # print(c)
+    # print(swapRow(c, 1, 0))
+    # print(det([[1, 4, 6], [2, 3, 2], [5, 5, 4]]))
 
 
-drive()
+print(inverse(dispatchU(([[1, 2, 1], [2, 6, 1], [1, 1, 4]]), 1)))
+# print(inverse([[1, 2, 1], [2, 6, 1], [1, 1, 4]]))
+# print(inverse([[1, 4, 6], [2, 3, 2], [5, 5, 4]]))
+# drive()
