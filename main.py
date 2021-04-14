@@ -14,8 +14,6 @@
 # (m*n) * (n*p) = m*p
 
 # ############# det ##############
-
-
 def det(a):
     if len(a) and len(a[0]) is 2:
         return a[0][0] * a[1][1] - a[0][1] * a[1][0]
@@ -25,7 +23,7 @@ def det(a):
             sign = 1
         else:
             sign = -1
-        sum1 += sign*a[0][j]*det(minor(a, 0, j))
+        sum1 += sign * a[0][j] * det(minor(a, 0, j))
     return sum1
 
 
@@ -47,17 +45,19 @@ def minor(b, row, col):
     return c
 
 
-def findU(a):
-    matL = unitMatrics(makeMatrics(len(a), len(a[0])))
-    a, matL = dispatchU(a, 2)
+# ############# LU ##############
+def findU(a, pivoting):
+    invL = unitMatrics(makeMatrics(len(a), len(a[0])))
     for row in range(len(a)):
         j = row + 1
         if a[row][row] is not 0:
             while j < len(a):
                 if a[j][row] is not 0:
+                    if pivoting is not 0:
+                        a = swapRow(a, j, checkPivot(a, j, row))
                     b = elementalMatrics(a, j, row)
                     a = multMatrics(b, a)
-                    matL = multMatrics(b, matL)
+                    invL = multMatrics(b, invL)
                 j += 1
         else:
             while j < len(a):
@@ -65,11 +65,11 @@ def findU(a):
                     a = swapRow(a, row, j)
                     break
                 j += 1
-    return a, matL
+    return a, invL
 
 
-def dispatchU(a, index=0):
-    U, invL = findU(a)
+def dispatchU(a, index=0, pivoting=0):  # pivoting is for gaussian instability
+    U, invL = findU(a, pivoting)
     if index is 0:
         return U
     if index is 1:
@@ -77,78 +77,56 @@ def dispatchU(a, index=0):
     return U, invL
 
 
-
-# def findLU(a):
-#     matL = unitMatrics(makeMatrics(len(a), len(a[0])))
-#     for row in range(len(a)):
-#         j = row + 1
-#         if a[row][row] is not 0:
-#             while j < len(a):
-#                 if a[j][row] is not 0:
-#                     b = elementalMatrics(a, j, row)
-#                     a = multMatrics(b, a)
-#                     b[j][row] *= -1
-#                     matL = multMatrics(b, matL)
-#                 j += 1
-#         else:
-#             while j < len(a):
-#                 if a[j][row] is not 0:
-#                     a = swapRow(a, row, j)
-#                     break
-#                 j += 1
-#         # what to do if all under pivot are zero
-#     return a, matL
-#
-#
-# def dispatchLU(a, index=2):
-#     U,L=findLU(a)
-#     if index is 0:
-#         return U
-#     if index is 1:
-#         return L
-#     else:
-#         print(U)
-#         print(L)
-
-
-
 def findL(a):
-    return inverse(findU(a, 1))
+    return inverse(dispatchU(a, 1))
 
 
-def inverse(a):
-    if det(a) == 0:
+# return row of bigger pivot in col to swap rows
+def checkPivot(a, i, j):
+    for x in range(i + 1, len(a[0])):
+        if abs(a[i][j]) < abs(a[x][j]):
+            i = x
+    return i
+
+
+def inverse(a, pivoting=0):
+    if det(a) is 0:
         return
-    matInverse = dispatchU(a, 1)
-    size = len(a[0])-1
+    a, matInverse = dispatchU(a, 2, pivoting)
+    a, matInverse = oneOnDiagonal(a, matInverse)
+    size = len(a[0]) - 1
     while size > 0:
-        for i in range(size-1):
+        for i in range(size):
             b = elementalMatrics(a, i, size)
             a = multMatrics(b, a)
             matInverse = multMatrics(b, matInverse)
         size -= 1
-    print(matInverse)
-    return oneOnDiagonal(a, matInverse)
+    return matInverse
 
 
 def oneOnDiagonal(a, matInverse):
     b = makeMatrics(len(a), len(a[0]))
-    for x in range(len(a[0])):
-        b[x][x] = 1  # make b a unit matrix
+    b = unitMatrics(b)
     for i in range(len(a[0])):
+        b = unitMatrics(b)
         b[i][i] = 1 / a[i][i]
+        a = multMatrics(b, a)
         matInverse = multMatrics(b, matInverse)
-    return b
+    return a, matInverse
 
-
-def norma(a):
-    sum1 = 0
+# ########## range of error ############
+def infNorm(a):
     norm = 0
     for i in range(len(a[0])):
+        sumRow = 0
         for j in range(len(a)):
-            sum += abs(a[i][j])
-        norm = max(norm, sum1)
+            sumRow += abs(a[i][j])
+        norm = max(sumRow, norm)
     return norm
+
+
+def condA(a, invA):
+    return infNorm(a) * infNorm(invA)
 
 
 def elementalMatrics(a, i, j):
@@ -166,12 +144,14 @@ def unitMatrics(c):
 
 
 def multMatrics(a, b):
-    c = makeMatrics(len(a), len(b[0]))
-    for row in range(len(a)):
-        for col in range(len(b[0])):
-            for x in range(len(a)):
-                c[row][col] += (a[row][x] * b[x][col])
-    return c
+    if len(a[0]) is len(b):
+        c = makeMatrics(len(a), len(b[0]))
+        for row in range(len(a)):
+            for col in range(len(b[0])):
+                for x in range(len(a)):
+                    c[row][col] += (a[row][x] * b[x][col])
+        return c
+    return None
 
 
 def makeMatrics(row, col):
@@ -192,6 +172,12 @@ def setMatrics():
 
 
 def swapRow(a, r1, r2):
+    """
+    :param a: original matrics
+    :param r1: 1st row
+    :param r2: row to swap with
+    :return: matrics after swap
+    """
     if r2 < len(a) and r1 < len(a):
         temp = a[r1]
         a[r1] = a[r2]
@@ -203,23 +189,59 @@ def solveLU(invU, invL, b):
     return multMatrics(multMatrics(invU, invL), b)
 
 
-def drive():
-    a = [[1, 2, 1], [2, 6, 1], [1, 1, 4]]
-    b = [7, 8, 9]
+def printMat(a):
+    """
+    :param a: a matrix to print
+    :return: prints in matrix format
+    """
+    # print('\n'.join(['\t'.join(['{:4}'.format(round(item, 8)) for item in row])
+    #                  for row in a]))
+    # print("---------------")
+    print('\n'.join(['\t'.join(['{:4}'.format(item) for item in row])
+                     for row in a]))
+    print("---------------")
+
+
+def gaussianElimination(a, b):  # matrics and result vector
+    invA = inverse(a, 1)
+    cond = condA(a, invA)
+    print("cond = " + str(cond))
+    print("x = ")
+    printMat(multMatrics(invA, b))
+
+
+def LUdecomposition(a):
+    U, invL = dispatchU(a, 2)
+    L = inverse(invL)
+    print("U = ")
+    printMat(U)
+    print("L = ")
+    printMat(L)
+
+
+def driver():
+    a = [[2, -3, -5],
+         [1, -1, -2],
+         [-1, 3, 5]]
+
+    b = [[1],
+         [2],
+         [1]]
+
     if len(a) < 4:
-        x = multMatrics(inverse(a), b)
-        print("norma: " + norma(x))
+        gaussianElimination(a, b)
     else:
-        dispatchU(a)
-    # findU([[1, 2, 1], [2, 6, 1], [1, 1, 4]])
-    # # print(minor([[1, 2, 3], [4, 5, 6], [7, 8, 9]], 2, 2))
-    # c = setMatrics()
-    # print(c)
-    # print(swapRow(c, 1, 0))
-    # print(det([[1, 4, 6], [2, 3, 2], [5, 5, 4]]))
+        LUdecomposition(a)
 
 
-print(inverse(dispatchU(([[1, 2, 1], [2, 6, 1], [1, 1, 4]]), 1)))
-# print(inverse([[1, 2, 1], [2, 6, 1], [1, 1, 4]]))
-# print(inverse([[1, 4, 6], [2, 3, 2], [5, 5, 4]]))
-# drive()
+driver()
+
+# printMat(inverse([[1, 2, 1], [2, 6, 1], [1, 1, 4]]))  # [4.6,-1.4,-0.8],[-1.4,0.6,0.2],[-0.8,0.2,0.4]
+# printMat(inverse(dispatchU(a, 0, 1)))  # [4.6,-1.4,-0.8],[-1.4,0.6,0.2],[-0.8,0.2,0.4]
+# printMat(inverse([[2, -3, -5], [1, -1, -1], [-1, 3, 5]]))
+# 1.0,  0.0,  1.0
+# 2.0, -2.5,  1.5
+# -1.0,  1.5, -0.5
+# a = [[1,1,1,0],[0,3,1,2],[2,3,1,0],[1,0,2,1]]
+# a = [[3,-2,4],[1,0,2],[0,1,0]]
+# print(det(a))
