@@ -15,6 +15,10 @@
 
 # ############# det ##############
 def det(a):
+    """
+    :param a: matrics
+    :return: determinant of matrics a
+    """
     if len(a) and len(a[0]) is 2:
         return a[0][0] * a[1][1] - a[0][1] * a[1][0]
     sum1 = 0
@@ -28,6 +32,12 @@ def det(a):
 
 
 def minor(b, row, col):
+    """
+    :param b: matrics
+    :param row: row to remove
+    :param col: column to remove
+    :return: matrics b without row and col
+    """
     if row >= len(b) and col >= len(b):
         return b
     c = makeMatrics(len(b) - 1, len(b) - 1)
@@ -46,7 +56,12 @@ def minor(b, row, col):
 
 
 # ############# LU ##############
-def findU(a, pivoting):
+def findU(a, pivoting=0):
+    """
+    :param a: matrics
+    :param pivoting: indicates- 0 if not using pivoting, else if using pivoting
+    :return: U and inverse L matrices
+    """
     invL = unitMatrics(makeMatrics(len(a), len(a[0])))
     for row in range(len(a)):
         j = row + 1
@@ -69,6 +84,12 @@ def findU(a, pivoting):
 
 
 def dispatchU(a, index=0, pivoting=0):  # pivoting is for gaussian instability
+    """
+    :param a: matrics
+    :param index: indicates which option to return from func
+    :param pivoting: indicates- 0 if not using pivoting, else if using pivoting
+    :return: U, invL or both, with pivoting or without
+    """
     U, invL = findU(a, pivoting)
     if index is 0:
         return U
@@ -78,11 +99,21 @@ def dispatchU(a, index=0, pivoting=0):  # pivoting is for gaussian instability
 
 
 def findL(a):
+    """
+    :param a: matrics
+    :return: L matrics
+    """
     return inverse(dispatchU(a, 1))
 
 
 # return row of bigger pivot in col to swap rows
 def checkPivot(a, i, j):
+    """
+    :param a: matrics
+    :param i: pivot row index
+    :param j: pivot col index
+    :return: row index of the biggest element under pivot
+    """
     for x in range(i + 1, len(a[0])):
         if abs(a[i][j]) < abs(a[x][j]):
             i = x
@@ -90,6 +121,11 @@ def checkPivot(a, i, j):
 
 
 def inverse(a, pivoting=0):
+    """
+    :param a: matrics
+    :param pivoting: indicates- 0 if not using pivoting, else if using pivoting
+    :return: inverse matrics a
+    """
     if det(a) is 0:
         return
     a, matInverse = dispatchU(a, 2, pivoting)
@@ -105,6 +141,11 @@ def inverse(a, pivoting=0):
 
 
 def oneOnDiagonal(a, matInverse):
+    """
+    :param a: matrics
+    :param matInverse: matrics composed from all the elemental operations on matrics a
+    :return: a with 1 on the main diagonal, matInverse updated with the new elemental operations
+    """
     b = makeMatrics(len(a), len(a[0]))
     b = unitMatrics(b)
     for i in range(len(a[0])):
@@ -117,6 +158,10 @@ def oneOnDiagonal(a, matInverse):
 
 # ########## range of error ############
 def infNorm(a):
+    """
+    :param a: matrics
+    :return: infinity norm of a
+    """
     norm = 0
     for i in range(len(a[0])):
         sumRow = 0
@@ -127,6 +172,11 @@ def infNorm(a):
 
 
 def condA(a, invA):
+    """
+    :param a: matrics
+    :param invA: the inverse of matrics a
+    :return: cond of matrics a
+    """
     return infNorm(a) * infNorm(invA)
 
 
@@ -145,6 +195,11 @@ def unitMatrics(c):
 
 
 def multMatrics(a, b):
+    """
+    :param a:
+    :param b:
+    :return:
+    """
     if len(a[0]) is len(b):
         c = makeMatrics(len(a), len(b[0]))
         for row in range(len(a)):
