@@ -195,6 +195,10 @@ def elementalMatrics(a, i, j):
 
 
 def unitMatrics(c):
+    """
+    :param c: get matrix
+    :return: make her to unit matrix
+    """
     for x in range(len(c)):
         c[x][x] = 1  # make c a unit matrix
     return c
@@ -202,9 +206,9 @@ def unitMatrics(c):
 
 def multMatrics(a, b):
     """
-    :param a:
-    :param b:
-    :return:
+    :param a: get matrix
+    :param b: get matrix
+    :return: new matrix of mul between them
     """
     if len(a[0]) is len(b):
         c = makeMatrics(len(a), len(b[0]))
@@ -255,24 +259,22 @@ def swapRow(a, r1, r2):
     return a
 
 
-def solveLU(invU, invL, b):
-    return multMatrics(multMatrics(invU, invL), b)
-
-
 def printMat(a):
     """
     :param a: a matrix to print
     :return: prints in matrix format
     """
-    # print('\n'.join(['\t'.join(['{:4}'.format(round(item, 8)) for item in row])
-    #                  for row in a]))
-    # print("---------------")
     print('\n'.join(['\t'.join(['{:4}'.format(item) for item in row])
                      for row in a]))
     print("---------------")
 
 
-def gaussianElimination(a, b):  # matrics and result vector
+def gaussianElimination(a, b):
+    """
+    :param a: get matrix a
+    :param b: get result vector
+    :return: print to terminal
+    """
     invA = inverse(a, 1)
     cond = condA(a, invA)
     print("inverse A = ")
@@ -283,6 +285,11 @@ def gaussianElimination(a, b):  # matrics and result vector
 
 
 def LUdecomposition(a, b):
+    """
+    :param a: get matrix a
+    :param b: get result vector
+    :return: print LU and x solution
+     """
     U, invL = dispatchU(a, 2)
     L = inverse(invL)
     print("U = ")
@@ -294,6 +301,10 @@ def LUdecomposition(a, b):
 
 
 def driver():
+    """
+    main function
+    :return: print solution
+    """
     a = [[2, -3, -5],
          [1, -1, -2],
          [-1, 3, 5]]
