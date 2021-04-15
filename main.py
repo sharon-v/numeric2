@@ -160,7 +160,7 @@ def oneOnDiagonal(a, matInverse):
 def infNorm(a):
     """
     :param a: matrics
-    :return: infinity norm of a
+    :return: infinity norm of matrics a
     """
     norm = 0
     for i in range(len(a[0])):
@@ -181,6 +181,12 @@ def condA(a, invA):
 
 
 def elementalMatrics(a, i, j):
+    """
+    :param a: matrics
+    :param i: row index
+    :param j: column index
+    :return: elemental matrics to make a[i][j] = 0
+    """
     c = makeMatrics(len(a), len(a[0]))
     for x in range(len(a)):
         c[x][x] = 1  # make c a unit matrix
