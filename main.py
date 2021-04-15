@@ -279,9 +279,18 @@ def gaussianElimination(a, b):
     cond = condA(a, invA)
     print("inverse A = ")
     printMat(invA)
+    print("another presetation = ")
+    print(invA)
+    print("---------------")
     print("cond = " + str(cond))
+    print("---------------")
     print("x = ")
-    printMat(multMatrics(invA, b))
+    x = multMatrics(invA, b)
+    printMat(x)
+    print("another presetation = ")
+    print(x)
+    print("---------------")
+
 
 
 def LUdecomposition(a, b):
@@ -294,10 +303,21 @@ def LUdecomposition(a, b):
     L = inverse(invL)
     print("U = ")
     printMat(U)
+    print("another presetation = ")
+    print(U)
+    print("---------------")
     print("L = ")
     printMat(L)
+    print("another presetation = ")
+    print(L)
+    print("---------------")
     print("x = ")
-    printMat(multMatrics(multMatrics(inverse(U), invL), b))
+    x = multMatrics(multMatrics(inverse(U), invL), b)
+    printMat(x)
+    print("another presetation = ")
+    print(L)
+    print("---------------")
+
 
 
 def driver():
