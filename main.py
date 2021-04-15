@@ -211,6 +211,11 @@ def multMatrics(a, b):
 
 
 def makeMatrics(row, col):
+    """
+    :param row: get rows of matrix
+    :param col: get columns of matrix
+    :return: return zero matrix
+    """
     c = []
     for i in range(row):
         c += [[0] * col]
@@ -218,6 +223,9 @@ def makeMatrics(row, col):
 
 
 def setMatrics():
+    """
+    :return:  ask size and numbers for matrics
+    """
     row = int(input('Enter rows >>> '))
     col = int(input('Enter columns >>> '))
     c = makeMatrics(row, col)
