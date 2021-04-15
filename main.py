@@ -56,6 +56,31 @@ def minor(b, row, col):
 
 
 # ############# LU ##############
+# def findU(a, pivoting=0):
+#     """
+#     :param a: matrics
+#     :param pivoting: indicates- 0 if not using pivoting, else if using pivoting
+#     :return: U and inverse L matrices
+#     """
+#     invL = unitMatrics(makeMatrics(len(a), len(a[0])))
+#     for row in range(len(a)):
+#         j = row + 1
+#         if a[row][row] is not 0:
+#             while j < len(a):
+#                 if pivoting is not 0:
+#                     a = swapRow(a, j, checkPivot(a, j, row))
+#                 b = elementalMatrics(a, j, row)
+#                 a = multMatrics(b, a)
+#                 invL = multMatrics(b, invL)
+#             j += 1
+#         else:
+#             while j < len(a):
+#                 if a[j][row] is not 0:
+#                     a = swapRow(a, row, j)
+#                     break
+#                 j += 1
+#     return a, invL
+
 def findU(a, pivoting=0):
     """
     :param a: matrics
@@ -65,21 +90,24 @@ def findU(a, pivoting=0):
     invL = unitMatrics(makeMatrics(len(a), len(a[0])))
     for row in range(len(a)):
         j = row + 1
-        if a[row][row] is not 0:
-            while j < len(a):
-                if a[j][row] is not 0:
-                    if pivoting is not 0:
-                        a = swapRow(a, j, checkPivot(a, j, row))
-                    b = elementalMatrics(a, j, row)
-                    a = multMatrics(b, a)
-                    invL = multMatrics(b, invL)
-                j += 1
-        else:
-            while j < len(a):
-                if a[j][row] is not 0:
-                    a = swapRow(a, row, j)
-                    break
-                j += 1
+        while j < len(a):
+            if pivoting is not 0:   # inverseA
+                b = swapRow(a, j, checkPivot(a, j, row))
+                a = multMatrics(b, a)
+                invL = multMatrics(b, invL)
+            elif a[row][row] is 0:  # LU
+                k = j + 1
+                while k < len(a):
+                    if a[k][row] is not 0:
+                        b = swapRow(a, row, k)
+                        a = multMatrics(b, a)
+                        invL = multMatrics(b, invL)
+                        break
+                    k += 1
+            b = elementalMatrics(a, j, row)
+            a = multMatrics(b, a)
+            invL = multMatrics(b, invL)
+            j += 1
     return a, invL
 
 
@@ -188,8 +216,7 @@ def elementalMatrics(a, i, j):
     :return: elemental matrics to make a[i][j] = 0
     """
     c = makeMatrics(len(a), len(a[0]))
-    for x in range(len(a)):
-        c[x][x] = 1  # make c a unit matrix
+    c = unitMatrics(c)
     c[i][j] = -1 * (a[i][j] / a[j][j])
     return c
 
@@ -250,13 +277,13 @@ def swapRow(a, r1, r2):
     :param a: original matrics
     :param r1: 1st row
     :param r2: row to swap with
-    :return: matrics after swap
+    :return: elemental swap matrics
     """
-    if r2 < len(a) and r1 < len(a):
-        temp = a[r1]
-        a[r1] = a[r2]
-        a[r2] = temp
-    return a
+    c = makeMatrics(len(a), len(a[0]))
+    c = unitMatrics(c)
+    c[r1] = a[r2]
+    c[r2] = a[r1]
+    return c
 
 
 def printMat(a):
@@ -264,8 +291,10 @@ def printMat(a):
     :param a: a matrix to print
     :return: prints in matrix format
     """
-    print('\n'.join(['\t'.join(['{:4}'.format(item) for item in row])
-                     for row in a]))
+    # print('\n'.join(['\t'.join(['{:4}'.format(item) for item in row])
+    #                  for row in a]))
+    for i in range(len(a)):
+        print(a[i], end='\n')
     print("---------------")
 
 
@@ -296,19 +325,19 @@ def LUdecomposition(a, b):
     """
     :param a: get matrix a
     :param b: get result vector
-    :return: print LU and x solution
+    :return: prints LU and solution vector x
      """
     U, invL = dispatchU(a, 2)
     L = inverse(invL)
-    print("U = ")
-    printMat(U)
-    print("another presetation = ")
-    print(U)
-    print("---------------")
     print("L = ")
     printMat(L)
     print("another presetation = ")
     print(L)
+    print("---------------")
+    print("U = ")
+    printMat(U)
+    print("another presetation = ")
+    print(U)
     print("---------------")
     print("x = ")
     x = multMatrics(multMatrics(inverse(U), invL), b)
@@ -321,15 +350,17 @@ def LUdecomposition(a, b):
 def driver():
     """
     main function
-    :return: print solution
+    :return: prints solution
     """
-    a = [[2, -3, -5],
-         [1, -1, -2],
-         [-1, 3, 5]]
+    a = [[2, 1],
+         [4, 3]]
 
     b = [[1],
-         [2],
-         [1]]
+         [2]]
+
+    if det(a) is 0:
+        print("this matrix is singular")
+        return
 
     if len(a) < 4:
         gaussianElimination(a, b)
@@ -350,3 +381,8 @@ driver()
 # print(det(a))
 # LUdecomposition([[11, 25, 3, 6], [2, 7, 8, 6], [1, 14, 7, 32], [25, 9, 45, 12]], [[1], [2], [1], [2]])
 # LUdecomposition([[7,3,-1,2], [3,8,1,-4], [-1,1,4,-1], [2,-4,-1,6]], [[1], [1], [1], [1]])
+# gaussianElimination([[2,-3,-5], [1,6,1], [10,3,5]], [[2], [1], [3]])
+# LUdecomposition([[5,4,2,6], [4,2,1,0], [0,0,1,1], [2,3,1,5]], [[1], [1], [1], [1]])
+# gaussianElimination([[2,-3,-5], [1,6,1], [10,3,5]], [[2], [1], [3]])
+# gaussianElimination([[2,-5,3], [0,7,-2], [-1,4,1]], [[1], [2], [1]])
+
