@@ -292,7 +292,6 @@ def gaussianElimination(a, b):
     print("---------------")
 
 
-
 def LUdecomposition(a, b):
     """
     :param a: get matrix a
@@ -317,7 +316,6 @@ def LUdecomposition(a, b):
     print("another presetation = ")
     print(L)
     print("---------------")
-
 
 
 def driver():
