@@ -114,6 +114,7 @@ def oneOnDiagonal(a, matInverse):
         matInverse = multMatrics(b, matInverse)
     return a, matInverse
 
+
 # ########## range of error ############
 def infNorm(a):
     norm = 0
@@ -205,18 +206,22 @@ def printMat(a):
 def gaussianElimination(a, b):  # matrics and result vector
     invA = inverse(a, 1)
     cond = condA(a, invA)
+    print("inverse A = ")
+    printMat(invA)
     print("cond = " + str(cond))
     print("x = ")
     printMat(multMatrics(invA, b))
 
 
-def LUdecomposition(a):
+def LUdecomposition(a, b):
     U, invL = dispatchU(a, 2)
     L = inverse(invL)
     print("U = ")
     printMat(U)
     print("L = ")
     printMat(L)
+    print("x = ")
+    printMat(multMatrics(multMatrics(inverse(U), invL), b))
 
 
 def driver():
@@ -231,7 +236,7 @@ def driver():
     if len(a) < 4:
         gaussianElimination(a, b)
     else:
-        LUdecomposition(a)
+        LUdecomposition(a, b)
 
 
 driver()
@@ -245,3 +250,5 @@ driver()
 # a = [[1,1,1,0],[0,3,1,2],[2,3,1,0],[1,0,2,1]]
 # a = [[3,-2,4],[1,0,2],[0,1,0]]
 # print(det(a))
+# LUdecomposition([[11, 25, 3, 6], [2, 7, 8, 6], [1, 14, 7, 32], [25, 9, 45, 12]], [[1], [2], [1], [2]])
+# LUdecomposition([[7,3,-1,2], [3,8,1,-4], [-1,1,4,-1], [2,-4,-1,6]], [[1], [1], [1], [1]])
