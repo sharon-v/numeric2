@@ -91,7 +91,7 @@ def findU(a, pivoting=0):
     for row in range(len(a)):
         j = row + 1
         while j < len(a):
-            if pivoting is not 0:   # inverseA
+            if pivoting is not 0:  # inverseA
                 b = swapRow(a, j, checkPivot(a, j, row))
                 a = multMatrics(b, a)
                 invL = multMatrics(b, invL)
@@ -281,8 +281,9 @@ def swapRow(a, r1, r2):
     """
     c = makeMatrics(len(a), len(a[0]))
     c = unitMatrics(c)
-    c[r1] = a[r2]
-    c[r2] = a[r1]
+    temp = c[r1]
+    c[r1] = c[r2]
+    c[r2] = temp
     return c
 
 
@@ -380,8 +381,8 @@ driver()
 # a = [[3,-2,4],[1,0,2],[0,1,0]]
 # print(det(a))
 # LUdecomposition([[11, 25, 3, 6], [2, 7, 8, 6], [1, 14, 7, 32], [25, 9, 45, 12]], [[1], [2], [1], [2]])
-# LUdecomposition([[7,3,-1,2], [3,8,1,-4], [-1,1,4,-1], [2,-4,-1,6]], [[1], [1], [1], [1]])
-# gaussianElimination([[2,-3,-5], [1,6,1], [10,3,5]], [[2], [1], [3]])
-# LUdecomposition([[5,4,2,6], [4,2,1,0], [0,0,1,1], [2,3,1,5]], [[1], [1], [1], [1]])
-# gaussianElimination([[2,-3,-5], [1,6,1], [10,3,5]], [[2], [1], [3]])
-# gaussianElimination([[2,-5,3], [0,7,-2], [-1,4,1]], [[1], [2], [1]])
+# LUdecomposition([[7, 3, -1, 2], [3, 8, 1, -4], [-1, 1, 4, -1], [2, -4, -1, 6]], [[1], [1], [1], [1]])
+# gaussianElimination([[2, -3, -5], [1, 6, 1], [10, 3, 5]], [[2], [1], [3]])
+# LUdecomposition([[5, 4, 2, 6], [4, 2, 1, 0], [0, 0, 1, 1], [2, 3, 1, 5]], [[1], [1], [1], [1]])
+# gaussianElimination([[2, -3, -5], [1, 6, 1], [10, 3, 5]], [[2], [1], [3]])
+# gaussianElimination([[2, -5, 3], [0, 7, -2], [-1, 4, 1]], [[1], [2], [1]])
