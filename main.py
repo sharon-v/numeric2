@@ -347,6 +347,85 @@ def LUdecomposition(a, b):
     print("---------------")
 
 
+# dominant diagonal part
+
+def copyMat(A):
+    B = makeMatrics(len(A), len(A[0]))
+    for i in range(len(A)):
+        for j in range(len(A[0])):
+            B[i][j] = A[i][j]
+    return B
+
+
+def createDominantDiagonal(A, b=None):
+    max = 0
+    maxIndex = 0
+    sum = 0
+    for i in range (len(A)):
+        for j in range(len(A)):
+            sum += abs(A[i][j])
+            if abs(A[i][j]) > max:
+                max = abs(A[i][j])
+                maxIndex = j
+        if (sum - max) <= max:
+            A = manualSwapCol(A , maxIndex, i)
+        else:
+            max = 0
+            maxIndex = 0
+            for j in range(len(A)):
+                sum += abs(A[j][i])
+                if abs(A[j][i]) > max:
+                    max = abs(A[j][i])
+                    maxIndex = j
+            if rowSum(A[j]) - max <= max:
+                A, b = manualSwapRow(A,b, i, maxIndex)
+            else:
+                print("ERROR - no dominant diagonal")
+                return None, None
+    return A, b
+
+
+def manualSwapRow(a, b, r1, r2):
+    """
+    manaul rows exchange (without e)
+    :param a:
+    :param b:
+    :param r1:
+    :param r2:
+    :return:
+    """
+
+    if r2 < len(a) and r1 < len(a):
+        temp = a[r1]
+        a[r1] = a[r2]
+        a[r2] = temp
+        if b is not None:
+            temp = b[r1]
+            b[r1] = b[r2]
+            b[r2] = temp
+    return a, b
+
+
+def manualSwapCol(a, c1, c2):
+    if c2 < len(a) and c1 < len(a):
+        for i in range(len(a)):
+            temp = a[i][c1]
+            a[i][c1] = a[i][c2]
+            a[i][c2] = temp
+    return a
+
+
+def rowSum(line):
+    """
+    :param line: A list od numbers - line for the matrix
+    :return: the sum of all the numbers in abs  in the list
+    """
+    lineSum = 0
+    for index in range(len(line)):  # run over all the line`s members
+        lineSum += abs(line[index])
+    return lineSum
+
+
 def driver():
     """
     main function
